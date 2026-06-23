@@ -1,0 +1,58 @@
+services:
+    base:
+        image: base:latest
+        container_name: base
+        build:
+            context: ./base
+            dockerfile: ./base.dockerfile
+        volumes:
+            - type: bind
+              source: /dev
+              target: /dev
+              bind:
+                  create_host_path: true
+            - ./bagfiles:/root/bagfiles
+            - /tmp/.X11-unix:/tmp/.X11-unix:rw
+            - $HOME/.Xauthority:/root/.Xauthority
+        network_mode: "host"
+        privileged: true
+        environment:
+            - DISPLAY=${DISPLAY}
+            - ROS_DOMAIN_ID=50
+            - QT_X11_NO_MITSHM=1
+
+
+    gorm-drivers:
+        image: gorm-drivers:latest
+        container_name: gorm-drivers
+        extends:
+            service: base
+        build:
+            context: ./GORM
+            dockerfile: ./gorm-drivers.dockerfile
+            additional_contexts:
+                base: "service:base"
+
+    gorm-rover:
+        image: gorm:latest
+        container_name: gorm-drivers
+        extends:
+            service: base
+        build:
+            context: ./GORM
+            dockerfile: ./gorm.dockerfile
+            additional_contexts:
+                gorm-drivers: "service:gorm-drivers"
+
+    gorm-basestation:
+        image: gorm:latest
+        container_name: gorm-drivers
+        extends:
+            service: base
+        build:
+            context: ./GORM
+            dockerfile: ./gorm.dockerfile
+            additional_contexts:
+                gorm-drivers: "service:gorm-drivers"
+        environment:
+            - BASESTATION=true
