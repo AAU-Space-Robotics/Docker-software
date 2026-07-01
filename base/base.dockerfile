@@ -66,7 +66,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     procps \
     ca-certificates \
     # This will add gazebo harmonic, as that is default for jazzy
-    ros-${ROS_DISTRO}-ros-gz \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp &&\
     apt-get -y autoremove &&\
     apt-get clean autoclean &&\

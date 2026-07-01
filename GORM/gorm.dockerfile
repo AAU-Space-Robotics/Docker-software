@@ -9,7 +9,7 @@ ARG ROS_DISTRO=humble
 RUN mkdir -p ~/ros/${WORKSPACE}/src
 
 # Common zshrc sourcing
-RUN echo "source ~/ros/${WORKSPACE}/install/setup.sh" >> ~/.zshrc
+RUN sed -i "$(grep -n 'eval' ~/.zshrc | head -n1 | cut -d: -f1)i source ~/ros/${WORKSPACE}/install/setup.sh" ~/.zshrc
 
 # Batch clone of the PRL repos using vcstool
 COPY ./repos/gorm-internal.repos /root/ros/${WORKSPACE}/rover.repos
