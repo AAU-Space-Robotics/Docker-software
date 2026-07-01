@@ -5,6 +5,8 @@ services:
         build:
             context: ./base
             dockerfile: ./base.dockerfile
+            args:
+              - PLATFORM=ubuntu:22.4
         volumes:
             - type: bind
               source: /dev
@@ -59,3 +61,82 @@ services:
         environment:
             - BASESTATION=true
             - ZENOH_CONFIG_OVERRIDE=mode="client";connect/endpoints=["tcp/192.168.50.100:7447"]
+
+    base-jetson:
+        image: base-jetson:latest
+        container_name: base-jetson
+        platform: linux/arm64
+        build:
+            context: ./base
+            dockerfile: ./base.dockerfile
+            args:
+              - PLATFORM=nvcr.io/nvidia/l4t-jetpack:r36.4.0
+        volumes:
+            - type: bind
+              source: /dev
+              target: /dev
+              bind:
+                  create_host_path: true
+            - ./bagfiles:/root/bagfiles
+            - /tmp/.X11-unix:/tmp/.X11-unix:rw
+            - $HOME/.Xauthority:/root/.Xauthority
+        network_mode: "host"
+        privileged: true
+        environment:
+            - DISPLAY=${DISPLAY}
+            - ROS_DOMAIN_ID=50
+            - QT_X11_NO_MITSHM=1
+
+    gorm-jetson-drivers:
+        image: gorm-rover-jetson:latest
+        container_name: rover-cameras
+        platform: linux/arm64
+        build:
+          context: ./GORM
+          dockerfile: ./gorm-jetson-drivers.dockerfile
+          additional_contexts:
+              base-jetson: "service:base-jetson"
+        volumes:
+          - /tmp/argus_socket:/tmp/argus_socket
+          - /lib/modules/5.15.148-tegra:/lib/modules/5.15.148-tegra
+          - /dev/:/dev/
+          - /usr/local/zed/resources/:/usr/local/zed/resources/
+          - /tmp/.X11-unix/:/tmp/.X11-unix
+          - /dev/shm:/dev/shm
+        network_mode: host
+        privileged: true
+
+    gorm-jetson-rover:
+        image: gorm-rover-jetson:latest
+        container_name: rover-cameras
+        platform: linux/arm64
+        build:
+          context: ./GORM
+          dockerfile: ./gorm-jetson-rover.dockerfile
+          args:
+            - PLATFORM=nvcr.io/nvidia/l4t-jetpack:r36.4.0
+          additional_contexts:
+              gorm-jetson-drivers: "service:gorm-jetson-drivers"
+        volumes:
+          - /tmp/argus_socket:/tmp/argus_socket
+          - /lib/modules/5.15.148-tegra:/lib/modules/5.15.148-tegra
+          - /dev/:/dev/
+          - /usr/local/zed/resources/:/usr/local/zed/resources/
+          - /tmp/.X11-unix/:/tmp/.X11-unix
+          - /dev/shm:/dev/shm
+        stdin_open: true
+        tty: true
+        environment:
+          - ROS_DOMAIN_ID=50
+          - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+        network_mode: host
+        privileged: true
+        runtime: nvidia
+        restart: unless-stopped
+        devices:
+          - /dev:/dev
+          - /dev/video0:/dev/video0
+          - /dev/video1:/dev/video1
+          - /dev/video2:/dev/video2
+          - /dev/video3:/dev/video3
+
