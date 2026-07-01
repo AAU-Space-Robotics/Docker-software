@@ -1,0 +1,16 @@
+repositories:
+
+  gorm_gui:
+    type: git
+    url: https://github.com/AAU-Space-Robotics/gorm_gui.git
+    version: main
+
+  gorm_drivers:
+    type: git
+    url: https://github.com/AAU-Space-Robotics/gorm_drivers.git
+    version: main
+
+  gorm_navigation:
+    type: git
+    url: https://github.com/AAU-Space-Robotics/gorm_navigation.git
+    version: main

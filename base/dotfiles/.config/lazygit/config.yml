@@ -1,0 +1,9 @@
+os:
+  editPreset: 'nvim'
+gui:
+  switchTabsWithPanelJumpKeys: true
+
+keybinding:
+  universal:
+    quit: Q
+    quitWithoutChangingDirectory: q
