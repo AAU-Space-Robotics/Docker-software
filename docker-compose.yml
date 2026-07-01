@@ -34,8 +34,8 @@ services:
                 base: "service:base"
 
     gorm-rover:
-        image: gorm:latest
-        container_name: gorm-drivers
+        image: gorm-rover:latest
+        container_name: gorm-rover
         extends:
             service: base
         build:
@@ -45,8 +45,8 @@ services:
                 gorm-drivers: "service:gorm-drivers"
 
     gorm-basestation:
-        image: gorm:latest
-        container_name: gorm-drivers
+        image: gorm-basestation:latest
+        container_name: gorm-basestation
         extends:
             service: base
         build:
