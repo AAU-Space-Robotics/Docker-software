@@ -41,6 +41,7 @@ services:
         build:
             context: ./GORM
             dockerfile: ./gorm.dockerfile
+            no_cache: true
             additional_contexts:
                 gorm-drivers: "service:gorm-drivers"
 
@@ -52,6 +53,7 @@ services:
         build:
             context: ./GORM
             dockerfile: ./gorm.dockerfile
+            no_cache: true
             additional_contexts:
                 gorm-drivers: "service:gorm-drivers"
         environment:
